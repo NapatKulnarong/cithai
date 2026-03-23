@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 
 # ── Enumerations ──────────────────────────────────────────────────────────────
@@ -92,7 +93,13 @@ class Song(models.Model):
     )
     title           = models.CharField(max_length=255)
     custom_lyrics   = models.TextField(blank=True, null=True)
-    duration        = models.PositiveIntegerField(null=True, blank=True)
+    duration        = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)]
+    )
     is_shared       = models.BooleanField(default=False)
     creation_date   = models.DateTimeField(auto_now_add=True)
     audio_file_path = models.CharField(max_length=500, blank=True, null=True)
@@ -107,7 +114,8 @@ class Song(models.Model):
 
     def clean(self):
         # C-2: A User may own a maximum of 20 Songs at any time (FR-27, FR-28)
-        if self._state.adding:
+        # Skip until a user is set; admin/form validation will require it.
+        if self._state.adding and self.user_id:
             existing_count = Song.objects.filter(user=self.user).count()
             if existing_count >= 20:
                 raise ValidationError(
