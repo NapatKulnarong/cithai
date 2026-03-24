@@ -17,6 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from songs import api as songs_api
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Simple JSON API endpoints for Songs
+    path('api/songs/', songs_api.song_list_create, name='song-list-create'),
+    path('api/songs/<int:pk>/', songs_api.song_detail, name='song-detail'),
+    # Simple JSON API endpoints for Users (domain user)
+    path('api/users/', songs_api.user_list_create, name='user-list-create'),
+    path('api/users/<int:pk>/', songs_api.user_detail, name='user-detail'),
 ]

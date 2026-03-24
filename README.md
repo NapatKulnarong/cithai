@@ -45,6 +45,61 @@ SQLite is the default. If you switch to Postgres, add the usual `POSTGRES_*` env
 - Reset Docker volumes: `docker compose down -v && docker compose up --build`
 - Static collection: `docker compose exec web python manage.py collectstatic --noinput`
 
+## API (JSON, minimal) — CRUD examples
+Replace IDs with your own. Responses shown are typical success payloads.
+
+**Users**
+- Create (C):
+  ```bash
+  curl -X POST http://localhost:8000/api/users/ \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Demo User","email":"demo@example.com"}'
+  ```
+  → `{"id":1,"name":"Demo User","email":"demo@example.com"}`
+- Read list (R):
+  ```bash
+  curl http://localhost:8000/api/users/
+  ```
+  → `[{"id":1,"name":"Demo User","email":"demo@example.com"}]`
+- Update (U):
+  ```bash
+  curl -X PATCH http://localhost:8000/api/users/1/ \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Demo User Updated"}'
+  ```
+  → `{"id":1,"name":"Demo User Updated","email":"demo@example.com"}`
+- Delete (D):
+  ```bash
+  curl -X DELETE http://localhost:8000/api/users/1/
+  ```
+  → `{"status":"deleted"}`
+
+**Songs**
+- Create (C):
+  ```bash
+  curl -X POST http://localhost:8000/api/songs/ \
+    -H "Content-Type: application/json" \
+    -d '{"title":"Demo","mood":"HAPPY","genre":"POP","occasion":"BIRTHDAY","voice_type":"FEMALE","status":"PENDING","user_id":1,"duration":3.50}'
+  ```
+  → `{"id":1,"title":"Demo",...,"user_id":1}`
+- Read list (R):
+  ```bash
+  curl http://localhost:8000/api/songs/
+  ```
+  → `[{"id":1,"title":"Demo",...}]`
+- Update (U):
+  ```bash
+  curl -X PATCH http://localhost:8000/api/songs/1/ \
+    -H "Content-Type: application/json" \
+    -d '{"status":"COMPLETE","is_shared":true}'
+  ```
+  → `{"id":1,"title":"Demo",...,"status":"COMPLETE","is_shared":true}`
+- Delete (D):
+  ```bash
+  curl -X DELETE http://localhost:8000/api/songs/1/
+  ```
+  → `{"status":"deleted"}`
+
 ## Domain Model Mapping (to Exercise 2)
 - `User`: end user of the platform (email, name).
 - `MusicGenerationRequest`: structured request input; links to `User`; stores mood/genre/occasion/voice_type, lyrics, retry flag.
@@ -55,3 +110,5 @@ SQLite is the default. If you switch to Postgres, add the usual `POSTGRES_*` env
 - Django Admin enabled for all entities (`/admin`): create, list, edit, delete Users, Requests, Songs, ShareLinks.
 - Data persists to `db.sqlite3` (or container volume) via ORM migrations (`songs/migrations/0001_initial.py`).
 - To verify: log into admin with a superuser and perform add/edit/delete on each model; Song creation enforces 20-per-user limit.
+- API CRUD: see “API (JSON, minimal)” above; curl examples cover create/list/update/delete for Users and Songs.
+- Demo video: https://youtu.be/6MgYV5yJXKM
