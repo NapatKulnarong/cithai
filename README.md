@@ -1,5 +1,15 @@
 # Cithai — Domain Layer (Exercise 3)
 
+Cithai is an AI Music Generation Platform that gives users an intuitive interface to create custom songs from structured prompts (title, occasion, genre, voice type, mood, optional lyrics). Inputs are processed to generate unique compositions, and users manage their catalog via a personal library—play, download, and share. This repo delivers the domain/back-end layer: core entities (User, MusicGenerationRequest, Song, ShareLink), their relationships and constraints (e.g., 20-song per-user cap), persistence via Django ORM/migrations, and CRUD via Django Admin plus a minimal JSON API. UI and AI generation are out of scope here.
+
+Key benefits:
+- Enable users to create personalized music without musical expertise.
+- Provide instant music generation for various occasions and moods.
+- Offer a simple, accessible interface for creative expression.
+- Maintain user privacy with private-by-default song libraries.
+- Support content moderation to prevent offensive content generation.
+- Handle high traffic volumes (target: 1000+ requests per minute).
+
 ## Project Info
 - Repo: https://github.com/NapatKulnarong/cithai.git
 - Django: 5.2.8 (see `requirements.txt`)
