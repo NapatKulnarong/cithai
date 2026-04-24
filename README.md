@@ -1,6 +1,6 @@
-# Cithai — Domain Layer (Exercise 3)
+# Cithai — Domain Layer + Strategy Pattern (Exercise 4)
 
-Cithai is an AI Music Generation Platform that gives users an intuitive interface to create custom songs from structured prompts (title, occasion, genre, voice type, mood, optional lyrics). Inputs are processed to generate unique compositions, and users manage their catalog via a personal library—play, download, and share. This repo delivers the domain/back-end layer: core entities (User, MusicGenerationRequest, Song, ShareLink), their relationships and constraints (e.g., 20-song per-user cap), persistence via Django ORM/migrations, and CRUD via Django Admin plus a minimal JSON API. UI and AI generation are out of scope here.
+Cithai is an AI Music Generation Platform that gives users an intuitive interface to create custom songs from structured prompts (title, occasion, genre, voice type, mood, optional lyrics). Inputs are processed to generate unique compositions, and users manage their catalog via a personal library. This repo now covers both the Exercise 3 domain/back-end layer and the Exercise 4 Strategy Pattern implementation for interchangeable song generation providers (`mock` and `suno`).
 
 Key benefits:
 - Enable users to create personalized music without musical expertise.
@@ -14,8 +14,78 @@ Key benefits:
 - Repo: https://github.com/NapatKulnarong/cithai.git
 - Django: 5.2.8 (see `requirements.txt`)
 
+## Install
+Set up the backend, frontend, and local secrets separately.
+
+Backend:
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+```
+
+Frontend:
+```bash
+cd frontend
+cp .env.local.example .env.local
+npm install
+```
+
+Required secrets and external services:
+- `SUNO_API_TOKEN`: required only for Suno mode. Put it in your shell, Docker env, or a local `.env` file. Do not commit it.
+- `AUTH_SECRET`: required for NextAuth session encryption.
+- `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`: required for Google login.
+- `AUTH_URL`: public frontend URL, usually `http://localhost:3000`.
+- `DJANGO_API_BASE`: Django base URL, usually `http://127.0.0.1:8000`.
+- Google OAuth callback URL: `http://localhost:3000/api/auth/callback/google`.
+
+## Run
+Pick one generator mode and start both apps.
+
+Mock mode:
+Backend terminal:
+```bash
+export GENERATOR_STRATEGY=mock
+python manage.py runserver
+```
+Frontend terminal:
+```bash
+cd frontend
+npm run dev
+```
+Mock mode does not need a Suno token.
+
+Suno mode:
+Backend terminal:
+```bash
+export GENERATOR_STRATEGY=suno
+export SUNO_API_TOKEN=your_real_suno_token
+python manage.py runserver
+```
+Frontend terminal:
+```bash
+cd frontend
+npm run dev
+```
+If you use Docker Compose, choose the mode with `GENERATOR_STRATEGY`:
+```bash
+GENERATOR_STRATEGY=mock docker compose up --build
+GENERATOR_STRATEGY=suno SUNO_API_TOKEN=your_real_suno_token docker compose up --build
+```
+
+## Exercise 4 Deliverables
+- Strategy interface: `songs/generation/base.py`
+- Mock strategy: `songs/generation/mock.py`
+- Suno strategy: `songs/generation/suno.py`
+- Centralized selection mechanism: `songs/generation/factory.py` via `GENERATOR_STRATEGY=mock|suno`
+- Application service using the active strategy: `songs/services/generation_service.py`
+- JSON endpoints for starting and polling generation: `/api/generate/` and `/api/generate/<job_id>/`
+- Demonstration evidence: [`docs/exercise4-evidence.md`](./docs/exercise4-evidence.md)
+
 ## Quick Start (Docker — recommended)
 ```bash
+export GENERATOR_STRATEGY=mock
 docker compose up --build
 docker compose exec web python manage.py createsuperuser
 ```
@@ -29,6 +99,21 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+## Frontend (Next.js)
+The repo now includes a dedicated Next.js frontend in [`frontend/`](./frontend) with a full music dashboard, generator form, queue polling, and audio player.
+
+Run it in a second terminal after Django is up:
+
+```bash
+cd frontend
+cp .env.local.example .env.local
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. The frontend proxies requests to Django through Next route handlers, using `DJANGO_API_BASE` from `frontend/.env.local`.
+Google login is now required before the dashboard can be used. Configure `AUTH_SECRET`, `AUTH_GOOGLE_ID`, and `AUTH_GOOGLE_SECRET`, and register `http://localhost:3000/api/auth/callback/google` as the Google OAuth callback URL. For real song generation, also provide `SUNO_API_TOKEN` to the Django process or Docker Compose environment.
 
 ## Useful Docker Commands
 - Start: `docker compose up --build` (add `-d` to detach)
@@ -47,6 +132,11 @@ python manage.py runserver
 |----------|---------|---------|
 | `DJANGO_SECRET_KEY` | dev-secret-key-change-in-production | Django secret |
 | `DEBUG` | True | Debug mode |
+| `GENERATOR_STRATEGY` | `mock` | Active song-generation strategy: `mock` or `suno` |
+| `SUNO_API_TOKEN` | empty | Suno bearer token. Keep this in shell env or Docker env only. Never commit it. |
+| `SUNO_API_BASE` | `https://api.sunoapi.org` | Suno API base URL |
+| `SUNO_MODEL` | `V3_5` | Model name sent to the generate endpoint |
+| `SUNO_CALLBACK_URL` | empty | Optional callback URL. Polling works without it. |
 
 SQLite is the default. If you switch to Postgres, add the usual `POSTGRES_*` envs and update `DATABASES` in `cithai/settings.py`.
 
@@ -122,3 +212,100 @@ Replace IDs with your own. Responses shown are typical success payloads.
 - To verify: log into admin with a superuser and perform add/edit/delete on each model; Song creation enforces 20-per-user limit.
 - API CRUD: see “API (JSON, minimal)” above; curl examples cover create/list/update/delete for Users and Songs.
 - Demo video: https://youtu.be/6MgYV5yJXKM
+
+## Strategy Modes
+The Strategy Pattern is implemented behind `get_generator()` so the rest of the codebase does not branch on provider-specific logic. The service layer always stores the real active provider on `GenerationJob`, and polling resolves the strategy from the stored job provider rather than the current process environment.
+
+### Mock Mode
+Use this for offline development and deterministic tests.
+
+```bash
+export GENERATOR_STRATEGY=mock
+```
+
+```bash
+curl -X POST http://localhost:8000/api/generate/ \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":1,"title":"Demo","mood":"HAPPY","genre":"POP","occasion":"BIRTHDAY","voice_type":"FEMALE"}'
+```
+
+Captured local response:
+```json
+{
+  "job": {
+    "provider": "mock",
+    "status": "COMPLETE",
+    "task_id": null,
+    "audio_url": "https://example.com/mock.mp3"
+  },
+  "song": {
+    "title": "Demo",
+    "status": "COMPLETE",
+    "audio_file_path": "https://example.com/mock.mp3"
+  }
+}
+```
+
+### Suno Mode
+Use this to create a real generation task through `https://api.sunoapi.org/api/v1/generate` and poll it through `https://api.sunoapi.org/api/v1/generate/record-info`.
+
+```bash
+export GENERATOR_STRATEGY=suno
+export SUNO_API_TOKEN=your_real_token_here
+curl -X POST http://localhost:8000/api/generate/ \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":1,"title":"Demo","mood":"HAPPY","genre":"POP","occasion":"BIRTHDAY","voice_type":"FEMALE"}'
+```
+
+Captured start response shape:
+```json
+{
+  "job": {
+    "provider": "suno",
+    "status": "PROCESSING",
+    "task_id": "task-123456"
+  },
+  "song": {
+    "title": "Demo",
+    "status": "PROCESSING"
+  }
+}
+```
+
+Poll for status/details:
+```bash
+curl http://localhost:8000/api/generate/<job_id>/
+```
+
+Captured poll response shape after completion:
+```json
+{
+  "job": {
+    "provider": "suno",
+    "status": "COMPLETE",
+    "task_id": "task-123456",
+    "audio_url": "https://cdn.example.com/song.mp3"
+  },
+  "song": {
+    "title": "Demo",
+    "status": "COMPLETE",
+    "audio_file_path": "https://cdn.example.com/song.mp3"
+  }
+}
+```
+
+Place the Suno API key in a shell export, local `.env` loaded by your own tooling, or the `docker-compose.yml` environment section. Do not commit the real key.
+
+If you use Docker in this repo, set `GENERATOR_STRATEGY=mock` for local testing or `GENERATOR_STRATEGY=suno` plus `SUNO_API_TOKEN` for real generation:
+
+```bash
+GENERATOR_STRATEGY=mock docker compose up --build
+GENERATOR_STRATEGY=suno SUNO_API_TOKEN=your_real_suno_token docker compose up --build
+```
+
+## Demonstration Evidence
+Concrete Exercise 4 transcripts are in [`docs/exercise4-evidence.md`](./docs/exercise4-evidence.md).
+
+- Mock mode evidence: real local shell run against the deterministic mock strategy.
+- Suno mode evidence: reproducible shell run that exercises the Suno strategy start/poll flow with mocked HTTP responses, plus instructions to rerun the same flow with a real token.
+- Automated verification: `python3 manage.py test songs.tests`

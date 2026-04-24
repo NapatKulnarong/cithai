@@ -8,6 +8,8 @@ from .user import User
 from .requests import MusicGenerationRequest
 from .songs import Song
 from .share_links import ShareLink
+from .generation import GenerationJob  # add this
+
 
 __all__ = [
     "Mood",
@@ -19,4 +21,5 @@ __all__ = [
     "MusicGenerationRequest",
     "Song",
     "ShareLink",
+    "GenerationJob",
 ]

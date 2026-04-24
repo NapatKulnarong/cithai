@@ -8,6 +8,10 @@ services:
     environment:
       - DJANGO_SECRET_KEY=dev-secret-key-change-in-production
       - DEBUG=True
+      - GENERATOR_STRATEGY=${GENERATOR_STRATEGY:-mock}
+      - SUNO_API_TOKEN=${SUNO_API_TOKEN}
+      - SUNO_API_BASE=${SUNO_API_BASE:-https://api.sunoapi.org}
+  
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"

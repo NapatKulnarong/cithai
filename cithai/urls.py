@@ -21,10 +21,18 @@ from songs import api as songs_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/bootstrap/', songs_api.bootstrap, name='bootstrap'),
     # Simple JSON API endpoints for Songs
     path('api/songs/', songs_api.song_list_create, name='song-list-create'),
     path('api/songs/<int:pk>/', songs_api.song_detail, name='song-detail'),
     # Simple JSON API endpoints for Users (domain user)
     path('api/users/', songs_api.user_list_create, name='user-list-create'),
     path('api/users/<int:pk>/', songs_api.user_detail, name='user-detail'),
+    path('api/songs/<int:pk>/share/', songs_api.song_share, name='song-share'),
+    path('api/share-links/<str:token>/', songs_api.share_link_detail, name='share-link-detail'),
+    path('api/generation-jobs/', songs_api.generation_job_list, name='generation-job-list'),
+    path('api/generate/', songs_api.generate_start, name='generate-start'),
+    path('api/generate/<int:pk>/', songs_api.generate_poll, name='generate-poll'),
+    path('api/generate/<int:pk>/poll/', songs_api.generate_poll, name='generate-poll-alias'),
+    path('api/suno/callback/', songs_api.suno_callback, name='suno-callback'),
 ]

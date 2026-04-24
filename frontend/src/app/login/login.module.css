@@ -1,0 +1,110 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background:
+    linear-gradient(180deg, rgba(9, 6, 18, 0.98), rgba(18, 10, 33, 0.98)),
+    radial-gradient(circle at top left, rgba(176, 122, 255, 0.24), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(100, 56, 207, 0.24), transparent 34%);
+}
+
+.aura {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(217, 180, 255, 0.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(128, 74, 233, 0.16), transparent 34%);
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  padding: 40px;
+  border-radius: 32px;
+  border: 1px solid rgba(191, 165, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(29, 19, 53, 0.9), rgba(17, 11, 31, 0.92)),
+    radial-gradient(circle at top, rgba(209, 182, 255, 0.14), transparent 36%);
+  box-shadow: 0 32px 90px rgba(4, 1, 12, 0.46);
+  backdrop-filter: blur(24px);
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(193, 176, 235, 0.7);
+}
+
+.title {
+  margin-top: 14px;
+  font-size: clamp(2.4rem, 7vw, 3.6rem);
+  line-height: 0.95;
+  color: #f6f0ff;
+}
+
+.copy,
+.caption {
+  color: rgba(218, 205, 248, 0.8);
+}
+
+.copy {
+  margin-top: 16px;
+  line-height: 1.75;
+}
+
+.googleButton {
+  width: 100%;
+  margin-top: 28px;
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid rgba(191, 165, 255, 0.22);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #c38dff, #8b52ff 56%, #5a30d2);
+  color: #fcfbff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 20px 40px rgba(87, 43, 196, 0.4);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.googleButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 46px rgba(87, 43, 196, 0.48);
+}
+
+.googleMark {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+}
+
+.caption {
+  margin-top: 18px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 20px;
+  }
+
+  .card {
+    padding: 28px;
+    border-radius: 26px;
+  }
+}

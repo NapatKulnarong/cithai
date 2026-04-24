@@ -5,6 +5,7 @@ from django.db import models
 from .choices import Mood, Genre, Occasion, VoiceType, GenerationStatus
 from .user import User
 from .requests import MusicGenerationRequest
+from .generation import GenerationJob
 
 
 class Song(models.Model):
@@ -42,6 +43,14 @@ class Song(models.Model):
     genre = models.CharField(max_length=20, choices=Genre.choices)
     occasion = models.CharField(max_length=20, choices=Occasion.choices)
     voice_type = models.CharField(max_length=20, choices=VoiceType.choices)
+    generation_job = models.OneToOneField(
+        GenerationJob,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="song",
+    )
+
 
     class Meta:
         ordering = ["-creation_date"]

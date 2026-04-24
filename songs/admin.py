@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, MusicGenerationRequest, Song, ShareLink
+from .models import User, MusicGenerationRequest, Song, ShareLink, GenerationJob
 
 
 @admin.register(User)
@@ -24,3 +24,8 @@ class SongAdmin(admin.ModelAdmin):
 @admin.register(ShareLink)
 class ShareLinkAdmin(admin.ModelAdmin):
     list_display = ['id', 'song', 'token', 'is_active', 'created_at']
+
+@admin.register(GenerationJob)
+class GenerationJobAdmin(admin.ModelAdmin):
+    list_display = ["id", "provider", "task_id", "status", "request", "created_at"]
+    list_filter = ["provider", "status"]

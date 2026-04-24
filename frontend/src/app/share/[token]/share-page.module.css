@@ -1,0 +1,120 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(180, 122, 255, 0.22), transparent 30%),
+    linear-gradient(180deg, #05030a 0%, #0d0718 52%, #140b26 100%);
+}
+
+.aura {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(201, 168, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 80% 18%, rgba(130, 77, 238, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 80%, rgba(90, 52, 187, 0.14), transparent 30%);
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  display: grid;
+  gap: 18px;
+  padding: 32px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(30, 20, 55, 0.9), rgba(16, 10, 29, 0.94)),
+    radial-gradient(circle at top, rgba(211, 185, 255, 0.12), transparent 36%);
+  border: 1px solid rgba(191, 165, 255, 0.18);
+  box-shadow: 0 28px 70px rgba(4, 1, 12, 0.44);
+  backdrop-filter: blur(18px);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(196, 180, 234, 0.72);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 0.96;
+  color: #f6f0ff;
+}
+
+.meta,
+.copy {
+  margin: 0;
+  color: rgba(220, 208, 248, 0.78);
+}
+
+.detailRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.detailRow span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ece2ff;
+  font-weight: 600;
+  border: 1px solid rgba(191, 165, 255, 0.12);
+}
+
+.audio {
+  width: 100%;
+}
+
+.placeholder {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(220, 208, 248, 0.74);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.primaryLink {
+  background: linear-gradient(135deg, #c38dff, #8a51ff 56%, #5b30d2);
+  color: #fcfbff;
+  box-shadow: 0 18px 36px rgba(87, 43, 196, 0.38);
+}
+
+.secondaryLink {
+  border: 1px solid rgba(191, 165, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(236, 226, 255, 0.84);
+}
+
+@media (max-width: 720px) {
+  .card {
+    padding: 24px;
+  }
+}
