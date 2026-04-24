@@ -1,4 +1,4 @@
-# Cithai — Domain Layer + Strategy Pattern (Exercise 4)
+# Cithai
 
 Cithai is an AI Music Generation Platform that gives users an intuitive interface to create custom songs from structured prompts (title, occasion, genre, voice type, mood, optional lyrics). Inputs are processed to generate unique compositions, and users manage their catalog via a personal library. This repo now covers both the Exercise 3 domain/back-end layer and the Exercise 4 Strategy Pattern implementation for interchangeable song generation providers (`mock` and `suno`).
 
