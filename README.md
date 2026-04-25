@@ -170,57 +170,65 @@ Below are CRUD examples representing typical JSON endpoints (replace IDs with yo
 - `GenerationJob`: supporting application model for provider state, polling, and raw API payload storage.
 
 ### Class Diagram
-![Cithai class diagram](./docs/diagrams/class_diagram_updated.png)
+![Cithai class diagram](./docs/diagrams/class_diagram.png)
 
 ```mermaid
 classDiagram
     class User {
-      +email
-      +name
-    }
-    class MusicGenerationRequest {
-      +title
-      +custom_lyrics
-      +mood
-      +genre
-      +occasion
-      +voice_type
-      +submitted_at
-      +is_retry
-    }
-    class Song {
-      +title
-      +custom_lyrics
-      +duration
-      +is_shared
-      +creation_date
-      +audio_file_path
-      +status
-      +mood
-      +genre
-      +occasion
-      +voice_type
-    }
-    class ShareLink {
-      +token
-      +is_active
-      +created_at
-    }
-    class GenerationJob {
-      +provider
-      +task_id
-      +status
-      +audio_url
-      +error_message
-      +raw_response
+        +Integer id
+        +String username
+        +String email
+        +String password
+        +DateTimeField date_joined
     }
 
-    User "1" --> "many" MusicGenerationRequest
-    User "1" --> "many" Song
-    MusicGenerationRequest "1" --> "0..1" Song : generates
-    MusicGenerationRequest "1" --> "many" GenerationJob
-    GenerationJob "1" --> "0..1" Song
-    Song "1" --> "0..1" ShareLink
+    class Song {
+        +Integer id
+        +String title
+        +Text custom_lyrics
+        +Decimal duration
+        +Boolean is_shared
+        +Boolean is_public
+        +DateTimeField creation_date
+        +String audio_file_path
+        +String status
+        +String mood
+        +String genre
+        +String occasion
+        +String voice_type
+        +clean()
+    }
+
+    class ShareLink {
+        +Integer id
+        +String token
+        +Boolean is_active
+        +DateTimeField created_at
+    }
+
+    class MusicGenerationRequest {
+        +Integer id
+        +String prompt
+        +String parameters
+        +DateTimeField created_at
+    }
+
+    class GenerationJob {
+        +Integer id
+        +String provider
+        +String task_id
+        +String status
+        +String audio_url
+        +Text error_message
+        +DateTimeField created_at
+        +DateTimeField updated_at
+    }
+
+    User "1" -- "*" Song : owns
+    User "1" -- "*" MusicGenerationRequest : initiates
+    MusicGenerationRequest "1" -- "1" Song : creates
+    GenerationJob "1" -- "1" Song : fulfills
+    Song "1" -- "0..1" ShareLink : exposes via
 ```
 
 ### Sequence Diagram
@@ -233,7 +241,7 @@ sequenceDiagram
     participant NextAPI as Next.js API route
     participant Django as Django /api/generate/
     participant Service as generation_service
-    participant Generator as Strategy
+    participant Generator as Strategy (Mock/Suno)
     participant DB as Database
 
     User->>Frontend: Submit song prompt
@@ -243,7 +251,7 @@ sequenceDiagram
     Service->>DB: Save MusicGenerationRequest
     Service->>Generator: start(request)
     Generator-->>Service: GenerationResult
-    Service->>DB: Save GenerationJob and Song
+    Service->>DB: Save GenerationJob and pending Song
     Service-->>Django: job + song
     Django-->>NextAPI: JSON response
     NextAPI-->>Frontend: job + song payload
@@ -259,17 +267,8 @@ sequenceDiagram
     Service-->>Django: updated job + song
     Django-->>NextAPI: JSON response
     NextAPI-->>Frontend: JSON response
+
 ```
-
-### Exercise 4 Deliverables
-- Strategy interface: `songs/generation/base.py`
-- Mock strategy: `songs/generation/mock.py`
-- Suno strategy: `songs/generation/suno.py`
-- Centralized selection mechanism: `songs/generation/factory.py` via `GENERATOR_STRATEGY=mock|suno`
-- Application service using the active strategy: `songs/services/generation_service.py`
-- JSON endpoints for starting and polling generation: `/api/generate/` and `/api/generate/<job_id>/`
-- Demonstration evidence: [`docs/exercise4-evidence.md`](./docs/exercise4-evidence.md)
-
 ### Documentation Checklist
 - [x] Up-to-date domain model: the README lists the core domain entities plus the supporting generation job model.
 - [x] Class diagram synchronized with the code: the Mermaid diagram matches the Django model files.
@@ -348,6 +347,14 @@ Captured poll response shape after completion:
   }
 }
 ```
+
+## Screenshots
+
+| Studio Generation | Personal Library |
+| :---: | :---: |
+| <img src="docs/UI%20Screenshots/page_studio.png" width="400" alt="Studio Generation Page" /> | <img src="docs/UI%20Screenshots/page_library.png" width="400" alt="Personal Library Page" /> |
+| **Community Browse** | **Login Page** |
+| <img src="docs/UI%20Screenshots/page_browse.png" width="400" alt="Community Browse Page" /> | <img src="docs/UI%20Screenshots/page_login.png" width="400" alt="Login Page" /> |
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
