@@ -201,6 +201,7 @@
 .sidebarFooterTitle,
 .songInfo p {
   color: var(--shell-text-muted);
+  font-size: 0.85rem;
 }
 
 .profileMeta {
@@ -259,7 +260,8 @@
 
 .profileTags,
 .heroBadges,
-.filterBar {
+.filterBar,
+.toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -319,8 +321,9 @@
 
 .navItemActive {
   color: #fcfaff;
-  background: linear-gradient(135deg, #b87fff, #7e48ff 58%, #5b31d0);
-  box-shadow: 0 20px 38px rgba(95, 47, 212, 0.42);
+  background: linear-gradient(135deg, #a580e6, #7349d9 58%, #5c40b3);
+  border-color: transparent;
+  box-shadow: 0 20px 38px rgba(95, 47, 212, 0.35);
 }
 
 .navItem:hover,
@@ -504,7 +507,7 @@
 .textarea {
   width: 100%;
   border: 1px solid rgba(194, 168, 255, 0.16);
-  border-radius: 16px;
+  border-radius: 12px;
   background: rgba(12, 8, 25, 0.82);
   color: var(--shell-text);
   font: inherit;
@@ -553,8 +556,8 @@
 
 .primaryButton {
   color: #fcfbff;
-  background: linear-gradient(135deg, #c38cff, #8d54ff 56%, #5b2fd2);
-  box-shadow: 0 20px 38px rgba(96, 47, 214, 0.42);
+  background: linear-gradient(135deg, #a580e6, #7349d9 58%, #5c40b3);
+  box-shadow: 0 20px 38px rgba(96, 47, 214, 0.35);
 }
 
 .secondaryButton {
@@ -689,12 +692,12 @@
 .filterChipActive {
   color: #fcfbff;
   border-color: transparent;
-  background: linear-gradient(135deg, #bf88ff, #7f49ff 58%, #592dd1);
+  background: linear-gradient(135deg, #a580e6, #7349d9 58%, #5c40b3);
 }
 
 .songGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, 240px);
   gap: 16px;
   margin-top: 18px;
 }
@@ -795,6 +798,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.songFooterActions span {
+  margin-right: auto;
+  font-size: 0.75rem;
+  color: var(--shell-text-muted);
 }
 
 .songActionButton {

@@ -9,7 +9,7 @@ import {
 } from "@/lib/song-ui";
 
 import styles from "./app-shell.module.css";
-import { DeleteIcon, PlayControlIcon, ShareIcon } from "./icons";
+import { DeleteIcon, PlayControlIcon, ShareIcon, PublicIcon, PrivateIcon } from "./icons";
 import { StatusBadge } from "./status-badge";
 
 export function TrackCard({
@@ -20,8 +20,10 @@ export function TrackCard({
   onPlay,
   onShare,
   onDelete,
+  onTogglePublic,
   showStatus = true,
   subtitle,
+  isEditing,
 }: {
   song: Song;
   index: number;
@@ -30,8 +32,10 @@ export function TrackCard({
   onPlay?: (songId: number) => unknown;
   onShare?: (songId: number) => unknown;
   onDelete?: (songId: number) => unknown;
+  onTogglePublic?: (songId: number, isPublic: boolean) => unknown;
   showStatus?: boolean;
   subtitle?: string;
+  isEditing?: boolean;
 }) {
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Enter" || event.key === " ") {
@@ -57,6 +61,40 @@ export function TrackCard({
           <span>{formatLabel(song.genre)}</span>
         </div>
       </div>
+      
+      <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10, display: "flex", gap: "8px" }}>
+        {onTogglePublic ? (
+          <button
+            type="button"
+            className={styles.songActionButton}
+            style={{ backgroundColor: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
+            aria-label={song.is_public ? "Make Private" : "Make Public"}
+            title={song.is_public ? "Make Private" : "Make Public"}
+            onClick={(event) => {
+              event.stopPropagation();
+              void onTogglePublic(song.id, !song.is_public);
+            }}
+          >
+            {song.is_public ? <PublicIcon /> : <PrivateIcon />}
+          </button>
+        ) : null}
+        {isEditing && onDelete ? (
+          <button
+            type="button"
+            className={`${styles.songActionButton} ${styles.songActionButtonDanger}`}
+            style={{ backgroundColor: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
+            aria-label={`Delete ${song.title}`}
+            title="Delete"
+            onClick={(event) => {
+              event.stopPropagation();
+              void onDelete(song.id);
+            }}
+          >
+            <DeleteIcon />
+          </button>
+        ) : null}
+      </div>
+
       <div className={styles.songInfo}>
         <div>
           <h4>{song.title}</h4>
@@ -101,20 +139,7 @@ export function TrackCard({
                 <ShareIcon />
               </button>
             ) : null}
-            {onDelete ? (
-              <button
-                type="button"
-                className={`${styles.songActionButton} ${styles.songActionButtonDanger}`}
-                aria-label={`Delete ${song.title}`}
-                title="Delete"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  void onDelete(song.id);
-                }}
-              >
-                <DeleteIcon />
-              </button>
-            ) : null}
+
           </div>
         </div>
       </div>

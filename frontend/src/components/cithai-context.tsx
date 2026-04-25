@@ -29,6 +29,7 @@ type ComposerInput = {
   genre: string;
   occasion: string;
   voice_type: string;
+  is_public: boolean;
 };
 
 type CithaiContextValue = {
@@ -58,6 +59,7 @@ type CithaiContextValue = {
   generateSong: (payload: ComposerInput) => Promise<void>;
   shareSong: (songId: number) => Promise<boolean>;
   deleteSong: (songId: number) => Promise<boolean>;
+  togglePublic: (songId: number, isPublic: boolean) => Promise<boolean>;
   getUserName: (userId: number) => string;
 };
 
@@ -112,9 +114,9 @@ export function CithaiProvider({ children }: { children: ReactNode }) {
 
   const librarySongs = viewerSongs.filter((song) => isSongReady(song));
 
-  const browseSongs = viewer
-    ? songs.filter((song) => song.user_id !== viewer.id && song.is_shared && isSongReady(song))
-    : [];
+  const browseSongs = songs.filter(
+    (song) => song.is_public && isSongReady(song)
+  );
 
   const activeSong =
     songs.find((song) => song.id === activeSongId) ??
@@ -355,6 +357,36 @@ export function CithaiProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function togglePublic(songId: number, isPublic: boolean) {
+    try {
+      const response = await fetch(`/api/songs/${songId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_public: isPublic }),
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Could not update privacy setting.");
+      }
+
+      setSongs((current) => upsertById(current, payload));
+      setNotice({
+        tone: "success",
+        text: `Song is now ${isPublic ? "public" : "private"}.`,
+      });
+      return true;
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not update privacy setting.",
+      });
+      return false;
+    }
+  }
+
   function dismissNotice() {
     setNotice(null);
   }
@@ -401,6 +433,7 @@ export function CithaiProvider({ children }: { children: ReactNode }) {
         generateSong,
         shareSong,
         deleteSong,
+        togglePublic,
         getUserName,
       }}
     >

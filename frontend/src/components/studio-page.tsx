@@ -18,6 +18,7 @@ const defaultComposer = {
   genre: "POP",
   occasion: "CUSTOM",
   voice_type: "FEMALE",
+  is_public: false,
 };
 
 export function StudioPage() {
@@ -123,6 +124,22 @@ export function StudioPage() {
                 }
               />
             </div>
+            <label className={styles.field} style={{ flexDirection: "row", alignItems: "center", gap: "12px", marginTop: "12px", marginBottom: "8px" }}>
+              <input
+                type="checkbox"
+                checked={composer.is_public}
+                onChange={(event) =>
+                  setComposer((current) => ({
+                    ...current,
+                    is_public: event.target.checked,
+                  }))
+                }
+                style={{ width: "22px", height: "22px", accentColor: "var(--shell-accent-strong)", cursor: "pointer" }}
+              />
+              <span style={{ color: "var(--shell-text)", fontWeight: 600, cursor: "pointer" }}>
+                Make this song public (visible in Browse)
+              </span>
+            </label>
             <button
               type="submit"
               className={styles.primaryButton}

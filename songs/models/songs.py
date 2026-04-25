@@ -32,6 +32,7 @@ class Song(models.Model):
         validators=[MinValueValidator(0)],
     )
     is_shared = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     audio_file_path = models.CharField(max_length=500, blank=True, null=True)
     status = models.CharField(

@@ -21,7 +21,7 @@ python manage.py runserver
 Then in this `frontend/` folder:
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env
 npm install
 npm run dev
 ```
@@ -34,7 +34,7 @@ Before signing in, create a Google OAuth client and set the callback URL to:
 http://localhost:3000/api/auth/callback/google
 ```
 
-Then fill in these auth variables in `.env.local`:
+Then fill in these auth variables in `.env`:
 
 ```bash
 AUTH_URL=http://localhost:3000
@@ -49,6 +49,8 @@ AUTH_GOOGLE_SECRET=your-google-oauth-client-secret
 - `AUTH_SECRET`: Auth.js session secret
 - `AUTH_GOOGLE_ID`: Google OAuth client ID
 - `AUTH_GOOGLE_SECRET`: Google OAuth client secret
+- `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` come from a Google Cloud Console OAuth client.
+- `AUTH_SECRET` can be any long random string.
 
 ## Access Model
 - The dashboard redirects unauthenticated visitors to `/login`.

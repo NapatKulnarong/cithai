@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import styles from "./app-shell.module.css";
 import { useCithai } from "./cithai-context";
@@ -8,14 +8,7 @@ import { LibraryIcon } from "./icons";
 import { getSongDisplayStatus } from "@/lib/song-ui";
 import { TrackCard } from "./track-card";
 
-type FilterKey = "all" | "ready" | "creating" | "shared";
-
-const filters: Array<{ key: FilterKey; label: string }> = [
-  { key: "all", label: "All songs" },
-  { key: "ready", label: "Ready" },
-  { key: "creating", label: "Queue" },
-  { key: "shared", label: "Shared" },
-];
+type SortKey = "newest" | "oldest" | "title_asc" | "title_desc";
 
 export function LibraryPage() {
   const {
@@ -29,24 +22,37 @@ export function LibraryPage() {
     playSong,
     shareSong,
     deleteSong,
+    togglePublic,
     sharedCount,
   } = useCithai();
-  const [filter, setFilter] = useState<FilterKey>("all");
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortKey>("newest");
 
-  const filteredSongs = librarySongs.filter((song) => {
-    const displayStatus = getSongDisplayStatus(song);
+  const filteredSongs = useMemo(() => {
+    let result = librarySongs;
 
-    if (filter === "ready") {
-      return displayStatus === "COMPLETE";
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((song) => song.title.toLowerCase().includes(q));
     }
-    if (filter === "creating") {
-      return displayStatus === "PENDING" || displayStatus === "PROCESSING";
-    }
-    if (filter === "shared") {
-      return song.is_shared;
-    }
-    return true;
-  });
+
+    return result.sort((a, b) => {
+      if (sortBy === "newest") {
+        return new Date(b.creation_date).getTime() - new Date(a.creation_date).getTime();
+      }
+      if (sortBy === "oldest") {
+        return new Date(a.creation_date).getTime() - new Date(b.creation_date).getTime();
+      }
+      if (sortBy === "title_asc") {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortBy === "title_desc") {
+        return b.title.localeCompare(a.title);
+      }
+      return 0;
+    });
+  }, [librarySongs, searchQuery, sortBy]);
 
   return (
     <div className={styles.pageStack}>
@@ -60,8 +66,6 @@ export function LibraryPage() {
         </div>
         <div className={styles.metricRow}>
           <LibraryMetric label="Tracks" value={librarySongs.length} />
-          <LibraryMetric label="Ready" value={completedCount} />
-          <LibraryMetric label="Queue" value={pendingCount} />
           <LibraryMetric label="Shared" value={sharedCount} />
         </div>
       </section>
@@ -72,21 +76,46 @@ export function LibraryPage() {
             <p className={styles.eyebrow}>
               {selectedUser?.name ?? "Your"} catalog
             </p>
-            <h3 className={styles.sectionTitle}>Browse by status</h3>
+            <h3 className={styles.sectionTitle}>Your public & private tracks</h3>
           </div>
-          <div className={styles.filterBar}>
-            {filters.map((filterOption) => (
-              <button
-                key={filterOption.key}
-                type="button"
-                className={`${styles.filterChip} ${
-                  filter === filterOption.key ? styles.filterChipActive : ""
-                }`}
-                onClick={() => setFilter(filterOption.key)}
-              >
-                {filterOption.label}
-              </button>
-            ))}
+          <div className={styles.toolbar} style={{ flexWrap: "nowrap" }}>
+            <input
+              type="text"
+              placeholder="Search songs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.input}
+              style={{ minHeight: "42px", flex: 1, minWidth: "150px", padding: "0 12px", width: "auto" }}
+            />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortKey)}
+              className={styles.select}
+              style={{ minHeight: "42px", flexShrink: 0, width: "auto", padding: "0 12px" }}
+            >
+              <option value="newest">Sort: Newest</option>
+              <option value="oldest">Sort: Oldest</option>
+              <option value="title_asc">Sort: Title (A-Z)</option>
+              <option value="title_desc">Sort: Title (Z-A)</option>
+            </select>
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              style={{
+                minHeight: "42px",
+                padding: "0 16px",
+                borderRadius: "12px",
+                backgroundColor: isEditing ? "var(--shell-accent-strong)" : "transparent",
+                color: isEditing ? "#fff" : "var(--shell-text)",
+                border: `1px solid ${isEditing ? "var(--shell-accent-strong)" : "rgba(255, 255, 255, 0.1)"}`,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "14px",
+                transition: "all 0.2s",
+                flexShrink: 0
+              }}
+            >
+              {isEditing ? "Done" : "Edit"}
+            </button>
           </div>
         </div>
 
@@ -107,6 +136,8 @@ export function LibraryPage() {
                 onPlay={playSong}
                 showStatus={false}
                 onShare={shareSong}
+                onTogglePublic={togglePublic}
+                isEditing={isEditing}
                 onDelete={async (songId) => {
                   const nextSong = filteredSongs.find((item) => item.id === songId);
 

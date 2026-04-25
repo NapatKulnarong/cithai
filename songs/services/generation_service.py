@@ -49,6 +49,7 @@ def start_generation(payload: dict):
             voice_type=req.voice_type,
             status=result.status,
             audio_file_path=result.audio_url,
+            is_public=payload.get("is_public", False),
         )
         song.full_clean()
         song.save()

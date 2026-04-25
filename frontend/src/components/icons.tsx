@@ -3,6 +3,10 @@ import {
   TrashIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
+  MusicalNoteIcon,
+  RectangleStackIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 
@@ -28,11 +32,7 @@ export function SparkIcon() {
 }
 
 export function LibraryIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 4h3v16H5zm5-1h4v17h-4zm6 3h3v14h-3z" fill="currentColor" />
-    </svg>
-  );
+  return <RectangleStackIcon aria-hidden="true" />;
 }
 
 export function PulseIcon() {
@@ -133,14 +133,7 @@ export function SettingsIcon() {
 }
 
 export function StudioIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M4 7.5A2.5 2.5 0 0 1 6.5 5H9v14H6.5A2.5 2.5 0 0 1 4 16.5zm7-2.5h3.5A2.5 2.5 0 0 1 17 7.5v9A2.5 2.5 0 0 1 14.5 19H11zm8 2 1.5 1.5v7L19 17z"
-        fill="currentColor"
-      />
-    </svg>
-  );
+  return <MusicalNoteIcon aria-hidden="true" />;
 }
 
 export function CompassIcon() {
@@ -188,4 +181,12 @@ export function VolumeOnIcon() {
 
 export function VolumeOffIcon() {
   return <SpeakerXMarkIcon aria-hidden="true" />;
+}
+
+export function PublicIcon() {
+  return <EyeIcon aria-hidden="true" />;
+}
+
+export function PrivateIcon() {
+  return <EyeSlashIcon aria-hidden="true" />;
 }

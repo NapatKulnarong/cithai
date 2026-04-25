@@ -22,6 +22,8 @@ body {
     radial-gradient(circle at top right, rgba(106, 49, 199, 0.22), transparent 20%),
     radial-gradient(circle at bottom center, rgba(54, 25, 111, 0.42), transparent 42%),
     linear-gradient(180deg, #05030a 0%, #0c0718 42%, #130b25 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   font-family: var(--font-plus-jakarta-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

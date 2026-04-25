@@ -18,6 +18,7 @@ export type Song = {
   custom_lyrics: string | null;
   duration: number | null;
   is_shared: boolean;
+  is_public: boolean;
   creation_date: string;
   audio_file_path: string | null;
   status: GenerationStatus;

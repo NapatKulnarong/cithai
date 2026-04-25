@@ -8,6 +8,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import styles from "./app-shell.module.css";
 import { useCithai } from "./cithai-context";
 import {
+  CompassIcon,
   CloseIcon,
   LibraryIcon,
   LogoutIcon,
@@ -27,6 +28,7 @@ import { signOutFromApp } from "@/app/(app)/actions";
 const navItems = [
   { href: "/studio", label: "Studio", icon: StudioIcon },
   { href: "/library", label: "Library", icon: LibraryIcon },
+  { href: "/browse", label: "Browse", icon: CompassIcon },
 ];
 
 export function AppShell({
@@ -174,12 +176,7 @@ export function AppShell({
             })}
           </nav>
 
-          <div className={styles.sidebarFooter}>
-            <p className={styles.eyebrow}>Sound posture</p>
-            <h2 className={styles.sidebarFooterTitle}>
-              Keep Studio focused, let Library breathe, and browse the wider catalog without losing the player.
-            </h2>
-          </div>
+
         </aside>
 
         <div className={styles.mainColumn}>
