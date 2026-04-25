@@ -170,8 +170,6 @@ Below are CRUD examples representing typical JSON endpoints (replace IDs with yo
 - `GenerationJob`: supporting application model for provider state, polling, and raw API payload storage.
 
 ### Class Diagram
-![Cithai class diagram](./docs/diagrams/class_diagram.png)
-
 ```mermaid
 classDiagram
     class User {
@@ -232,8 +230,6 @@ classDiagram
 ```
 
 ### Sequence Diagram
-![Cithai sequence diagram](./docs/diagrams/sequence_diagram.png)
-
 ```mermaid
 sequenceDiagram
     actor User
